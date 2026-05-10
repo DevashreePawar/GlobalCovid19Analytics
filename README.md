@@ -4,7 +4,7 @@ An interactive Shiny dashboard that visualizes global COVID-19 death rates and v
 
 ## 📊 Live Demo
 
-**Access the deployed app:** [COVID-19 Analytics Dashboard on shinyapps.io](https://devashreepawar.shinyapps.io/)
+**Access the deployed app:** [COVID-19 Analytics Dashboard on shinyapps.io](https://8etlvn-devashree-pawar.shinyapps.io/COVID19Analysis/)
 
 ## 🎯 Research Questions
 
