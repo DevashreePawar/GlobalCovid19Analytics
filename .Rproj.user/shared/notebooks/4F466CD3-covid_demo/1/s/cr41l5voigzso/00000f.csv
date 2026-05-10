@@ -1,0 +1,7 @@
+"0","confirmed_long <- confirmed %>%"
+"0","  select(-c(UID:code3, Country_Region, Combined_Key)) %>%"
+"0","  pivot_longer(-(FIPS:`Long_`), "
+"0","               names_to = ""Date"", "
+"0","               values_to = ""confirmed"") %>%"
+"0","  mutate(Date = (mdy(Date))) # convert string to date-time"
+"0","confirmed_long"

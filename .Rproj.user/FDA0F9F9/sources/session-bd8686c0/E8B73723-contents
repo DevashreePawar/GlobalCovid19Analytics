@@ -1,0 +1,37 @@
+---
+title: "BIOS/EPID 511 Homework 4"
+author: Devashree Pawar
+output: 
+  html_document:
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+##  Web Scraping and Shiny App
+
+Pick **ONE** from the following to conduct web scraping or develop a shiny app. For HW4, I am expecting the following files: 
+ 
+- `Rmd` file and knitted file to show web scraping/data processing: include your shiny app (if there is one) link in this `Rmd`
+
+- `app.R` or `ui.R` and `sever.R` for shiny app.
+
+### 1. Global covid dealth rate and vaccine percentage
+Scrape, organize, and visualize the global death rate and vaccine percentage. COVID-19 pandemic cases and mortality by country is available here: https://en.wikipedia.org/wiki/COVID-19_pandemic_death_rates_by_country, and COVID-19 vaccine distribution by country is available here: https://en.wikipedia.org/wiki/COVID-19_vaccine
+
+Below is an example of global map of covid death rate. To make a map in R, see COVID demo.
+
+![](example1.png){width=50%}
+
+
+### 2. COVID progression 
+
+- Develop a Shiny app that visualizes the progression of the 2019-22 Coronavirus Outbreak. 
+  * See COVID demo folder for data and code
+
+### 3. Others
+
+- If you are ambitious, bring in visualization of other types of data, e.g., stock market, tweets, contrast with previous outbreak (e.g., 2003 SARS, 2009 H1N1, 2012 MERS, 2014 Ebola), prediction from your statistical/epidemiological model, and so on. 
+

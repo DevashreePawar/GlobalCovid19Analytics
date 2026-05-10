@@ -1,0 +1,8 @@
+"0","death_url <- ""https://en.wikipedia.org/wiki/COVID-19_pandemic_death_rates_by_country"""
+"0","page_death <- read_html(death_url)"
+"0","death_table <- page_death %>%"
+"0","  html_nodes(""table.wikitable"") %>%"
+"0","  .[[1]] %>%  # The main table is the first wikitable"
+"0","  html_table()"
+"0",""
+"0","death_table"

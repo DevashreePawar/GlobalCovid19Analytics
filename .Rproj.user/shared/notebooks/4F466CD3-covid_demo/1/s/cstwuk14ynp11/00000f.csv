@@ -1,0 +1,6 @@
+"0","library(gganimate)"
+"0","ncov_tbl <- ncov_tbl %>%"
+"0","  mutate(logconfirmed=if_else(confirmed==0, 0, log(confirmed)))"
+"0","basemap <- plot_usmap(data=ncov_tbl, values=""logconfirmed"", include = c(""CA"", ""AZ"")) +"
+"0","  theme(panel.background = element_rect(color = ""black"", fill = ""lightblue""))"
+"0","basemap"

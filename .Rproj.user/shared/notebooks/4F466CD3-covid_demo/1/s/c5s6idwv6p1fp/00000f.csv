@@ -1,0 +1,7 @@
+"0","most_recent <- ncov_tbl %>%"
+"0","  filter(Date==""2022-10-04"")"
+"0",""
+"0","plot_usmap(data=most_recent, values=""confirmed"", include = c(""CA"", ""AZ"")) + "
+"0","  labs(title = ""US Counties"","
+"0","       subtitle = ""Confirmed COVID cases of the counties of CA and AZ on 2022-10-04"") + "
+"0","  theme(panel.background = element_rect(color = ""black"", fill = ""lightblue""))"

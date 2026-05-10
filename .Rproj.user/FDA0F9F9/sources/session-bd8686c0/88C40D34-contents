@@ -1,0 +1,361 @@
+# app.R
+library(shiny)
+library(shinydashboard)
+library(rvest)
+library(dplyr)
+library(ggplot2)
+library(rnaturalearth)
+library(rnaturalearthdata)
+library(sf)
+library(stringr)
+library(countrycode)
+
+# Custom CSS for a clean, professional look
+custom_css <- "
+  .skin-blue .main-header .logo {
+    background-color: #003087;
+    font-weight: bold;
+  }
+  .skin-blue .main-header .navbar {
+    background-color: #003087;
+  }
+  .skin-blue .main-sidebar {
+    background-color: #f4f4f4 Keep the sidebar light grey
+  }
+  .box {
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  .content-wrapper {
+    background-color: #ffffff;
+  }
+  h3, h4 {
+    color: #003087;
+    font-family: 'Arial', sans-serif;
+  }
+  .selectize-input {
+    border-radius: 4px;
+    border: 1px solid #ccc;
+  }
+  .btn {
+    border-radius: 4px;
+  }
+"
+
+# Data scraping and cleaning functions
+scrape_death_data <- function() {
+  death_url <- "https://en.wikipedia.org/wiki/COVID-19_pandemic_death_rates_by_country"
+  page_death <- read_html(death_url)
+  death_table <- page_death %>%
+    html_nodes("table.wikitable") %>%
+    .[[1]] %>%
+    html_table()
+  
+  death_table_clean <- death_table %>%
+    select(Country, `Deaths / million`, Deaths, Cases) %>%
+    filter(!str_detect(Country, "World|Europe|Total")) %>%
+    mutate(
+      `Deaths / million` = as.numeric(str_replace_all(`Deaths / million`, ",", "")),
+      Deaths = as.numeric(str_replace_all(Deaths, ",", "")),
+      Cases = as.numeric(str_replace_all(Cases, ",", ""))
+    )
+  return(death_table_clean)
+}
+
+scrape_vaccine_data <- function() {
+  vaccine_url <- "https://en.wikipedia.org/wiki/COVID-19_vaccine"
+  page <- read_html(vaccine_url)
+  tables <- page %>% html_nodes("table.wikitable")
+  captions <- tables %>% html_nodes("caption") %>% html_text(trim = TRUE)
+  target_index <- which(str_detect(captions, regex("distribution by country", ignore_case = TRUE)))
+  
+  if (length(target_index) == 0) {
+    stop("Couldn't find the 'COVID-19 vaccine distribution by country' table.")
+  }
+  
+  vaccine_table <- html_table(tables[[target_index]], fill = TRUE)
+  colnames(vaccine_table) <- ifelse(
+    colnames(vaccine_table) == "" | is.na(colnames(vaccine_table)),
+    paste0("Column_", seq_along(colnames(vaccine_table))),
+    str_trim(colnames(vaccine_table))
+  )
+  
+  vaccine_table <- vaccine_table %>%
+    mutate(across(where(is.character), str_trim)) %>%
+    mutate(across(
+      where(~ any(str_detect(., "[0-9]"))),
+      ~ str_replace_all(., ",", "")
+    ))
+  
+  vaccine_percent_clean <- vaccine_table %>%
+    select(-Column_1) %>%
+    rename(
+      Country = Location,
+      Vaccinated = `Vaccinated[b]`,
+      Percent = `Percent[c]`
+    ) %>%
+    filter(!str_detect(Country, "World|European Union")) %>%
+    mutate(
+      Percent = as.numeric(str_replace_all(Percent, "%", "")),
+      Vaccinated = as.numeric(str_replace_all(Vaccinated, ",", "")),
+      Country = str_trim(Country)
+    )
+  return(vaccine_percent_clean)
+}
+
+# Prepare merged dataset
+prepare_data <- function() {
+  death_table_clean <- scrape_death_data()
+  vaccine_percent_clean <- scrape_vaccine_data()
+  
+  covid_final <- merge(death_table_clean, vaccine_percent_clean, by = "Country", all.x = TRUE)
+  
+  # Standardize country names
+  covid_final <- covid_final %>%
+    mutate(Country = case_when(
+      Country == "United States" ~ "USA",
+      Country == "United Kingdom" ~ "UK",
+      Country == "Czech Republic" ~ "Czechia",
+      Country == "Democratic Republic of the Congo" ~ "Dem. Rep. Congo",
+      Country == "Republic of the Congo" ~ "Congo",
+      TRUE ~ Country
+    ))
+  
+  # Add ISO3 codes and continent
+  covid_final <- covid_final %>%
+    mutate(iso3 = countrycode(Country, origin = "country.name", destination = "iso3c", warn = FALSE))
+  
+  world <- ne_countries(scale = "medium", returnclass = "sf") %>%
+    st_drop_geometry() %>%
+    select(iso_a3, continent) %>%
+    mutate(iso_a3 = as.character(iso_a3))
+  
+  covid_final <- covid_final %>%
+    left_join(world, by = c("iso3" = "iso_a3")) %>%
+    filter(!is.na(continent)) %>%
+    mutate(
+      continent = case_when(
+        continent == "Oceania" ~ "Australia",
+        TRUE ~ continent
+      ),
+      continent = factor(continent, 
+                         levels = c("Africa", "Antarctica", "Asia", "Australia", 
+                                    "Europe", "North America", "South America"))
+    )
+  
+  return(covid_final)
+}
+
+# Load data once at startup
+covid_final <- prepare_data()
+world_map <- ne_countries(scale = "medium", returnclass = "sf")
+
+# UI
+ui <- dashboardPage(
+  dashboardHeader(title = "COVID-19 Global Analysis"),
+  dashboardSidebar(
+    sidebarMenu(
+      menuItem("Overview", tabName = "overview", icon = icon("globe")),
+      menuItem("Death Rates Map", tabName = "map", icon = icon("map")),
+      menuItem("Vaccination vs. Mortality", tabName = "scatter", icon = icon("scatter-plot")),
+      menuItem("Continental Analysis", tabName = "continental", icon = icon("chart-bar")),
+      menuItem("Vaccination Distribution", tabName = "histogram", icon = icon("chart-area"))
+    )
+  ),
+  dashboardBody(
+    tags$head(tags$style(HTML(custom_css))),
+    tabItems(
+      # Overview Tab
+      tabItem(tabName = "overview",
+              fluidRow(
+                box(width = 12,
+                    h3("Global COVID-19 Analysis Dashboard"),
+                    p("This interactive dashboard explores global COVID-19 death rates and vaccination percentages using data scraped from Wikipedia. Navigate through the tabs to view visualizations addressing the following research questions:"),
+                    tags$ul(
+                      tags$li("RQ1: How do COVID-19 death rates vary across countries globally?"),
+                      tags$li("RQ2: Is there a relationship between vaccination rates and COVID-19 death rates?"),
+                      tags$li("RQ3: How do vaccination rates and mortality rates differ by continent?"),
+                      tags$li("RQ4: What is the global distribution of vaccination rates by mortality level?")
+                    ),
+                    p("Data sources: Wikipedia pages on COVID-19 death rates and vaccine distribution.")
+                )
+              )
+      ),
+      # Map Tab
+      tabItem(tabName = "map",
+              fluidRow(
+                box(width = 12,
+                    title = "Global COVID-19 Death Rates",
+                    plotOutput("choropleth_map", height = "600px"),
+                    p("Choropleth map showing deaths per million by country. Darker shades indicate higher mortality.")
+                )
+              )
+      ),
+      # Scatter Tab
+      tabItem(tabName = "scatter",
+              fluidRow(
+                box(width = 12,
+                    title = "Vaccination Rates vs. Death Rates",
+                    selectInput("continent_scatter", "Filter by Continent:",
+                                choices = c("All", levels(covid_final$continent)),
+                                selected = "All"),
+                    plotOutput("scatter_plot", height = "500px"),
+                    p("Scatter plot showing vaccination percentage vs. deaths per million, with point size indicating total deaths.")
+                )
+              )
+      ),
+      # Continental Analysis Tab
+      tabItem(tabName = "continental",
+              fluidRow(
+                box(width = 6,
+                    title = "Vaccination Rates by Continent",
+                    plotOutput("vaccination_boxplot", height = "400px"),
+                    p("Boxplot showing the distribution of vaccination rates by continent.")
+                ),
+                box(width = 6,
+                    title = "Deaths per Million by Continent",
+                    plotOutput("deaths_boxplot", height = "400px"),
+                    p("Boxplot showing the distribution of deaths per million by continent.")
+                )
+              )
+      ),
+      # Histogram Tab
+      tabItem(tabName = "histogram",
+              fluidRow(
+                box(width = 12,
+                    title = "Vaccination Rates by Mortality Level",
+                    sliderInput("mortality_threshold", "Mortality Threshold (Deaths per Million):",
+                                min = 500, max = 5000, value = 2000, step = 100),
+                    plotOutput("histogram_plot", height = "500px"),
+                    p("Histogram comparing vaccination rate distributions for high and low mortality countries.")
+                )
+              )
+      )
+    )
+  )
+)
+
+# Server
+server <- function(input, output) {
+  
+  # Reactive data for scatter plot filtering
+  filtered_data <- reactive({
+    if (input$continent_scatter == "All") {
+      covid_final
+    } else {
+      covid_final %>% filter(continent == input$continent_scatter)
+    }
+  })
+  
+  # Choropleth Map
+  output$choropleth_map <- renderPlot({
+    world_covid <- world_map %>%
+      left_join(covid_final, by = c("name" = "Country"))
+    
+    ggplot(world_covid) +
+      geom_sf(aes(fill = `Deaths / million`)) +
+      scale_fill_gradient(low = "lightblue", high = "darkred", na.value = "grey90",
+                          name = "Deaths per Million") +
+      theme_minimal() +
+      labs(title = "Global Variation in COVID-19 Death Rates",
+           subtitle = "Deaths per Million by Country",
+           caption = "Data from Wikipedia (scraped tables)") +
+      theme(legend.position = "bottom",
+            plot.title = element_text(hjust = 0.5, face = "bold", size = 16),
+            plot.subtitle = element_text(hjust = 0.5, size = 12))
+  })
+  
+  # Scatter Plot
+  output$scatter_plot <- renderPlot({
+    ggplot(filtered_data(), aes(x = Percent, y = `Deaths / million`, size = Deaths)) +
+      geom_point(alpha = 0.5, color = "steelblue") +
+      geom_smooth(method = "lm", se = TRUE, color = "darkred", linetype = "dashed", size = 1.0) +
+      scale_size_continuous(name = "Total Deaths", range = c(2, 12)) +
+      theme_minimal() +
+      labs(
+        title = "Vaccination Rates vs. COVID-19 Death Rates",
+        x = "Vaccination Percentage (%)",
+        y = "Deaths per Million",
+        caption = "Data from Wikipedia (scraped tables)"
+      ) +
+      theme(
+        plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+        axis.title = element_text(size = 12),
+        axis.text = element_text(size = 10),
+        legend.position = "right"
+      )
+  })
+  
+  # Vaccination Boxplot
+  output$vaccination_boxplot <- renderPlot({
+    ggplot(covid_final, aes(x = continent, y = Percent, fill = continent)) +
+      geom_boxplot(alpha = 0.7, outlier.shape = 21, outlier.fill = "white") +
+      scale_fill_viridis_d(option = "viridis", name = "Continent") +
+      labs(
+        title = "COVID-19 Vaccination Rates by Continent",
+        x = "Continent",
+        y = "Vaccination Percentage (%)",
+        caption = "Data Source: Wikipedia"
+      ) +
+      theme_minimal() +
+      theme(
+        plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+        axis.title = element_text(size = 12),
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 10),
+        legend.position = "none",
+        plot.caption = element_text(size = 8, hjust = 0)
+      ) +
+      coord_flip()
+  })
+  
+  # Deaths Boxplot
+  output$deaths_boxplot <- renderPlot({
+    ggplot(covid_final, aes(x = continent, y = `Deaths / million`, fill = continent)) +
+      geom_boxplot(alpha = 0.7, outlier.shape = 21, outlier.fill = "white") +
+      scale_fill_viridis_d(option = "viridis", name = "Continent") +
+      labs(
+        title = "COVID-19 Deaths per Million by Continent",
+        x = "Continent",
+        y = "Deaths per Million",
+        caption = "Data Source: Wikipedia"
+      ) +
+      theme_minimal() +
+      theme(
+        plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+        axis.title = element_text(size = 12),
+        axis.text.x = element_text(angle = 45, hjust = 1, size = 10),
+        legend.position = "none",
+        plot.caption = element_text(size = 8, hjust = 0)
+      ) +
+      coord_flip()
+  })
+  
+  # Histogram
+  output$histogram_plot <- renderPlot({
+    covid_final <- covid_final %>%
+      mutate(High_Mortality = ifelse(`Deaths / million` > input$mortality_threshold, "High", "Low"))
+    
+    ggplot(covid_final, aes(x = Percent, fill = High_Mortality)) +
+      geom_histogram(position = "identity", alpha = 0.6, bins = 30, color = "white") +
+      scale_fill_manual(values = c("High" = "#D55E00", "Low" = "#0072B2"),
+                        labels = c(sprintf("High (>%d deaths/million)", input$mortality_threshold),
+                                   sprintf("Low (≤%d deaths/million)", input$mortality_threshold))) +
+      labs(
+        title = "Vaccination Rates by Mortality Level",
+        subtitle = "Comparing Countries with High and Low COVID-19 Mortality",
+        x = "Vaccination Rate (%)",
+        y = "Number of Countries",
+        fill = "Mortality Level"
+      ) +
+      theme_minimal(base_size = 14) +
+      theme(
+        plot.title = element_text(face = "bold", hjust = 0.5, size = 16),
+        plot.subtitle = element_text(hjust = 0.5, size = 12),
+        axis.title = element_text(face = "bold", size = 12),
+        legend.position = "right"
+      )
+  })
+}
+
+# Run the app
+shinyApp(ui, server)

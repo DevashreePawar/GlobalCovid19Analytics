@@ -1,0 +1,7 @@
+"0","ncov_tbl <- confirmed_long %>%"
+"0","  left_join(death_long) %>%"
+"0","  rename(fips=FIPS)"
+"0","  #pivot_longer(c(confirmed,death), "
+"0","  #             names_to = ""Case"", "
+"0","  #             values_to = ""Count"")"
+"0","ncov_tbl %>% print(width = Inf)"

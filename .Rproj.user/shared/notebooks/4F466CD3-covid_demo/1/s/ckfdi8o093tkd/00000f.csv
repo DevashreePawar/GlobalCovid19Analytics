@@ -1,0 +1,7 @@
+"0","death_long <- deaths %>% "
+"0","  select(-c(UID:code3, Country_Region, Combined_Key)) %>%"
+"0","  pivot_longer(-c(FIPS:`Long_`, Population), "
+"0","               names_to = ""Date"", "
+"0","               values_to = ""death"") %>%"
+"0","  mutate(Date = mdy(Date))"
+"0","death_long"

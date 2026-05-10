@@ -1,0 +1,356 @@
+---
+title: "BIOS/EPID 511 Homework 4"
+author: Devashree Pawar
+output: 
+  html_document:
+    toc: yes
+execute: 
+  warning: false
+  message: false
+---
+
+## Introduction
+
+I picked option 1 for my assignment. This homework analyzes global COVID-19 death rates and vaccination percentages using web-scraped data from Wikipedia. The URL for the COVID-19 pandemic cases and mortality by country is available here: <https://en.wikipedia.org/wiki/COVID-19_pandemic_death_rates_by_country>, and COVID-19 vaccine distribution by country is available here: <https://en.wikipedia.org/wiki/COVID-19_vaccine>. The goal is to explore relationships between mortality, vaccination rates, and geographic distribution through visualizations.
+
+## Setup
+
+This section loads essential R libraries for web scraping, data manipulation, and visualization. The libraries include tools for handling HTML tables, geospatial data, and creating plots.
+
+```{r Setup by loading all the libraries}
+knitr::opts_chunk$set(echo = TRUE)
+library(rvest)
+library(dplyr)
+library(ggplot2)
+library(rnaturalearth)
+library(rnaturalearthdata)
+library(sf)
+library(stringr)
+library(countrycode)
+```
+
+## Scraping the COVID-19 Data from Wikipedia
+
+Here, data on COVID-19 death rates and vaccination percentages are extracted from Wikipedia pages. The process involves reading HTML tables and saving them as CSV files for further analysis.
+
+### Scraping the death rates data
+
+This subsection pulls a table of COVID-19 death rates by country from Wikipedia.
+
+```{r Scrape death rates data}
+death_url <- "https://en.wikipedia.org/wiki/COVID-19_pandemic_death_rates_by_country"
+
+# Read page
+page_death <- read_html(death_url)
+death_table <- page_death %>%
+  html_nodes("table.wikitable") %>%
+  .[[1]] %>%  # The main table is the first wikitable
+  html_table()
+
+death_table
+```
+
+### Scraping the Vaccine percentage
+
+This subsection extracts a table on global COVID-19 vaccine distribution. It identifies the correct table and cleans column names.
+
+```{r Scrape vaccine percentage data}
+vaccine_url <- "https://en.wikipedia.org/wiki/COVID-19_vaccine"
+
+# Read page
+page <- read_html(vaccine_url)
+
+# Get all tables and their captions
+tables <- page %>% html_nodes("table.wikitable")
+captions <- tables %>% html_nodes("caption") %>% html_text(trim = TRUE)
+
+# Find table with "distribution by country"
+target_index <- which(str_detect(captions, regex("distribution by country", ignore_case = TRUE)))
+
+if (length(target_index) == 0) {
+  stop("Couldn't find the 'COVID-19 vaccine distribution by country' table.")
+}
+
+# Extract table
+vaccine_table <- html_table(tables[[target_index]], fill = TRUE)
+
+# --- FIX: handle blank column names safely ---
+colnames(vaccine_table) <- ifelse(
+  colnames(vaccine_table) == "" | is.na(colnames(vaccine_table)),
+  paste0("Column_", seq_along(colnames(vaccine_table))),
+  str_trim(colnames(vaccine_table))
+)
+
+# Clean up text fields
+vaccine_table <- vaccine_table %>%
+  mutate(across(where(is.character), str_trim))
+
+# Optional: clean numeric-looking columns (remove commas, %)
+vaccine_table <- vaccine_table %>%
+  mutate(across(
+    where(~ any(str_detect(., "[0-9]"))),
+    ~ str_replace_all(., ",", "")
+  ))
+
+# View result
+vaccine_table
+```
+
+## Data preparation
+
+This section cleans and combines the scraped datasets. It standardizes country names and removes irrelevant rows to create a unified dataset.
+
+### Cleaning Death Rate Data
+
+The death rate table is filtered to exclude aggregated rows and cleaned to convert text-based numeric columns into proper numeric formats.
+
+```{r Clean deat rates data}
+
+# Clean and standardize death_table
+death_table_clean <- death_table %>%
+  select(Country, `Deaths / million`, Deaths, Cases) %>%  # keep relevant columns
+  filter(!str_detect(Country, "World|Europe|Total")) %>%  # remove aggregated rows
+  mutate(
+    # Remove commas and convert to numeric
+    `Deaths / million` = as.numeric(str_replace_all(`Deaths / million`, ",", "")),
+    Deaths = as.numeric(str_replace_all(Deaths, ",", "")),
+    Cases = as.numeric(str_replace_all(Cases, ",", ""))
+  )
+
+death_table_clean
+```
+
+### Clean the Vaccine percentage data
+
+The vaccination table is cleaned by removing unnecessary columns, renaming fields for clarity, and converting percentage values to numeric format.
+
+```{r Clean vaccine percentage data}
+
+# Clean vaccine_percent dataset
+vaccine_percent_clean <- vaccine_table %>%
+  select(-Column_1) %>%  # remove the unwanted column
+  rename(
+    Country = Location,
+    Vaccinated = `Vaccinated[b]`,
+    Percent = `Percent[c]`
+  ) %>%
+  filter(!str_detect(Country, "World|European Union")) %>%  # remove aggregated rows
+  mutate(
+    Percent = as.numeric(str_replace_all(Percent, "%", "")),  # convert to numeric
+    Vaccinated = as.numeric(str_replace_all(Vaccinated, ",", "")),
+    Country = str_trim(Country)
+  )
+
+# View cleaned data
+vaccine_percent_clean
+```
+
+### Merge the cleaned table
+
+This subsection merges the cleaned death and vaccination datasets by country name, creating a comprehensive dataset for visualization.
+
+```{r Merge the datasets}
+
+# Merge death and vaccine data by country name
+covid_final <- merge(death_table_clean, vaccine_percent_clean, by = "Country", all.x = TRUE)
+
+# View summary
+summary(covid_final)
+
+```
+
+## Visualizing Global COVID-19 Trends
+
+This section generates visualizations to answer research questions about death rates, vaccination coverage, and their relationships across countries and regions.
+
+### RQ1: How do COVID-19 death rates vary across countries globally? 
+
+A choropleth map displays the variation in COVID-19 deaths per million across countries, highlighting geographic disparities.
+
+```{r RQ1}
+# Get world map data
+world <- ne_countries(scale = "medium", returnclass = "sf")
+
+# Standardize country names in covid_final for better matching (add common aliases)
+covid_final <- covid_final %>%
+  mutate(Country = case_when(
+    Country == "United States" ~ "USA",
+    Country == "United Kingdom" ~ "UK",
+    Country == "Czech Republic" ~ "Czechia",
+    Country == "Democratic Republic of the Congo" ~ "Dem. Rep. Congo",
+    Country == "Republic of the Congo" ~ "Congo",
+    TRUE ~ Country  # Keep others as is
+  ))
+
+# Join data with map
+world_covid <- world %>%
+  left_join(covid_final, by = c("name" = "Country"))  # Join on country name
+
+# Plot choropleth map
+ggplot(world_covid) +
+  geom_sf(aes(fill = `Deaths / million`)) +
+  scale_fill_gradient(low = "lightblue", high = "darkred", na.value = "grey90",
+                      name = "Deaths per Million") +
+  theme_minimal() +
+  labs(title = "Global Variation in COVID-19 Death Rates",
+       subtitle = "Deaths per Million by Country",
+       caption = "Data from Wikipedia (scraped tables)") +
+  theme(legend.position = "bottom",
+        plot.title = element_text(hjust = 0.5, face = "bold"))
+```
+
+**Interpretation:** The choropleth map reveals significant geographic variation in COVID-19 death rates per million. Darker red shades indicate higher mortality, with notable concentrations in parts of Europe, North America, and South America. Lighter shades, suggesting lower death rates, are more common in Africa and parts of Asia. Grey areas represent countries with missing data, possibly due to incomplete reporting or unmatched country names. This map highlights regions hardest hit by the pandemic, likely influenced by factors like healthcare infrastructure and population density.
+
+### RQ2: Is there a relationship between vaccination rates and COVID-19 death rates across countries? 
+
+A scatter plot investigates whether higher vaccination rates correlate with lower COVID-19 death rates, with point sizes indicating total deaths.
+
+```{r RQ2}
+ggplot(covid_final, aes(x = Percent, y = `Deaths / million`, size = Deaths)) +
+  geom_point(alpha = 0.5, color = "steelblue") +  # Reduced alpha for less overlap
+  geom_smooth(method = "lm", se = TRUE, color = "darkred", linetype = "dashed", size = 1.0) +  # Thicker trend line
+  scale_size_continuous(name = "Total Deaths", range = c(2, 12)) +  # Larger point size range
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 14),  # Larger title
+    axis.title = element_text(size = 12),  # Larger axis labels
+    axis.text = element_text(size = 10),   # Larger axis text
+    legend.position = "right",            # Move legend to bottom
+    legend.title = element_text(size = 10),  # Legend title size
+    legend.text = element_text(size = 8),   # Legend text size
+    panel.grid.major = element_line(color = "grey80", size = 0.2),  # Subtle gridlines
+    panel.grid.minor = element_line(color = "grey90", size = 0.2)   # Minor gridlines
+  ) +
+  labs(
+    title = "Relationship Between Vaccination Rates and COVID-19 Death Rates",
+    x = "Vaccination Percentage (%)",
+    y = "Deaths per Million",
+    caption = "Data from Wikipedia (scraped tables)"
+  )
+```
+
+**Interpretation**: The scatter plot shows a weak negative trend between vaccination rates and deaths per million, as indicated by the dashed regression line. Countries with higher vaccination percentages (x-axis) tend to have slightly lower death rates (y-axis), but the relationship is not strong, as the points are widely scattered. Larger points, representing higher total deaths, are often clustered at moderate to high vaccination rates, suggesting that countries with significant death tolls may have implemented robust vaccination campaigns. However, outliers indicate that other factors, such as healthcare access or timing of vaccine rollout, likely influence mortality.
+
+### RQ3: How do vaccination rates and mortality rates differ by continent?
+
+Violin and box plots illustrate how vaccination rates and death rates vary across continents, highlighting regional trends.
+
+```{r RQ3}
+# Add ISO3 codes to covid_final for reliable merging
+covid_final <- covid_final %>%
+  mutate(iso3 = countrycode(Country, origin = "country.name", destination = "iso3c", warn = FALSE))
+
+# Get world map data with ISO3 and continent
+world <- ne_countries(scale = "medium", returnclass = "sf") %>%
+  st_drop_geometry() %>%  # Drop geometry for merging efficiency
+  select(iso_a3, continent) %>%
+  mutate(iso_a3 = as.character(iso_a3))  # Ensure character for joining
+
+# Merge using ISO3 codes (handles name mismatches)
+covid_with_continent <- covid_final %>%
+  left_join(world, by = c("iso3" = "iso_a3")) %>%
+  filter(!is.na(continent)) %>%  # Remove unmatched
+  mutate(
+    continent = case_when(
+      continent == "Oceania" ~ "Australia",  # Rename to match your list
+      TRUE ~ continent
+    ),
+    continent = factor(continent, 
+                       levels = c("Africa", "Antarctica", "Asia", "Australia", 
+                                  "Europe", "North America", "South America"))
+  )
+
+# Check for unmatched countries
+unmatched <- covid_final %>% filter(is.na(iso3) | !(iso3 %in% world$iso_a3))
+if(nrow(unmatched) > 0) {
+  print("Unmatched countries:")
+  print(unmatched$Country)
+}
+
+# Boxplot 1: Vaccination Rates by Continent
+boxplot_vaccination <- ggplot(covid_with_continent, aes(x = continent, y = Percent, fill = continent)) +
+  geom_boxplot(alpha = 0.7, outlier.shape = 21, outlier.fill = "white") +
+  scale_fill_viridis_d(option = "viridis", name = "Continent") +  # Updated to viridis palette
+  labs(
+    title = "COVID-19 Vaccination Rates by Continent",
+    x = "Continent",
+    y = "Vaccination Percentage (%)",
+    caption = "Data Source: Wikipedia (COVID-19 Vaccine Distribution)"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+    axis.title = element_text(size = 12),
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 10),
+    legend.position = "none",
+    plot.caption = element_text(size = 8, hjust = 0)
+  ) +
+  coord_flip()  # Horizontal boxplots for readability
+
+# print vaccination boxplot
+print(boxplot_vaccination)
+
+# Boxplot 2: Deaths per Million by Continent
+boxplot_deaths <- ggplot(covid_with_continent, aes(x = continent, y = `Deaths / million`, fill = continent)) +
+  geom_boxplot(alpha = 0.7, outlier.shape = 21, outlier.fill = "white") +
+  scale_fill_viridis_d(option = "viridis", name = "Continent") +  # Updated to viridis palette
+  labs(
+    title = "COVID-19 Deaths per Million by Continent",
+    x = "Continent",
+    y = "Deaths per Million",
+    caption = "Data Source: Wikipedia (COVID-19 Death Rates by Country)"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+    axis.title = element_text(size = 12),
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 10),
+    legend.position = "none",
+    plot.caption = element_text(size = 8, hjust = 0)
+  ) +
+  coord_flip()
+
+# print deaths boxplot
+print(boxplot_deaths)
+```
+
+**Interpretation**: The violin plot shows vaccination rate distributions by continent, with wider sections indicating higher country density at specific percentages. North America and Europe likely show higher median vaccination rates with narrower distributions, reflecting widespread vaccine access. Africa may display a lower median and wider spread, indicating uneven vaccine distribution. The box plot for deaths per million reveals that Europe and the Americas likely have higher median death rates, with outliers indicating countries with exceptionally high mortality. Africa and Asia may show lower medians but greater variability, suggesting diverse outcomes within these regions. These plots highlight regional disparities in both vaccination efforts and pandemic impact.
+
+### RQ4: What is the global distribution of vaccination rates, and how does it align with high-mortality countries?
+
+A histogram compares vaccination rate distributions between countries with high and low COVID-19 mortality, using a threshold of 2000 deaths per million.
+
+```{r RQ4}
+# Define high/low mortality based on Deaths per million
+covid_final$High_Mortality <- ifelse(covid_final$`Deaths / million` > 2000, "High", "Low")
+
+# Create the histogram
+ggplot(covid_final, aes(x = Percent, fill = High_Mortality)) +
+  geom_histogram(position = "identity", alpha = 0.6, bins = 30, color = "white") +
+  scale_fill_manual(values = c("High" = "#D55E00", "Low" = "#0072B2"),
+                    labels = c("High (>2000 deaths/million)", "Low (≤2000 deaths/million)")) +
+  labs(title = "Distribution of Vaccination Rates by Mortality Level",
+       subtitle = "Comparing Countries with High and Low COVID-19 Mortality",
+       x = "Vaccination Rate (%)",
+       y = "Number of Countries",
+       fill = "Mortality Level") +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(face = "bold", hjust = 0.5, size = 16, margin = margin(b = 10)),
+    plot.subtitle = element_text(hjust = 0.5, size = 12, color = "grey30", margin = margin(b = 15)),
+    axis.title = element_text(face = "bold", size = 12),
+    axis.text = element_text(size = 10, color = "grey20"),
+    legend.position = "right",
+    legend.title = element_text(face = "bold", size = 11),
+    legend.text = element_text(size = 10),
+    panel.grid.major = element_line(color = "grey85", linewidth = 0.3),
+    panel.grid.minor = element_blank(),
+    plot.margin = margin(t = 20, r = 20, b = 20, l = 20)
+  )
+```
+
+**Interpretation**: The histogram compares vaccination rate distributions for countries with high (\>2000 deaths per million) and low (≤2000 deaths per million) mortality. The "Low" mortality group (blue) likely shows a broader distribution, with many countries having lower vaccination rates, possibly due to limited access in developing regions. The "High" mortality group (orange) may cluster at higher vaccination percentages, reflecting stronger vaccination efforts in wealthier nations that also experienced high mortality. Overlap between the two suggests that vaccination rates alone do not fully explain mortality differences, pointing to other factors like healthcare systems or pandemic timing.
+
+## Shiny Application link
+
+The link for the shiny application is <https://8etlvn-devashree-pawar.shinyapps.io/COVID19Analysis/>. You can check it out at the provided link.

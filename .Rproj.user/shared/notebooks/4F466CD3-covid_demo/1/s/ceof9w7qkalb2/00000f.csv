@@ -1,0 +1,4 @@
+"0","library(tidyverse)"
+"0","library(lubridate)"
+"0","confirmed=read_csv(file=""time_series_covid19_confirmed_US.csv"", show_col_types = FALSE)"
+"0","deaths=read_csv(""time_series_covid19_deaths_US.csv"", show_col_types = FALSE)"

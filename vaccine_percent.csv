@@ -1,0 +1,292 @@
+"","Column_1","Location","Vaccinated[b]","Percent[c]"
+"1","","World[d][e]","5645247500","70.70%"
+"2","","China[f]","1318026800","92.48%"
+"3","","India","1027438900","72.08%"
+"4","","European Union[g]","338481060","75.43%"
+"5","","United States[h]","270227170","79.12%"
+"6","","Indonesia","204419400","73.31%"
+"7","","Brazil","189643420","90.17%"
+"8","","Pakistan","165567890","67.94%"
+"9","","Bangladesh","151507170","89.45%"
+"10","","Japan","104740060","83.79%"
+"11","","Mexico","97179496","75.56%"
+"12","","Nigeria","93829430","42.05%"
+"13","","Vietnam","90497670","90.79%"
+"14","","Russia","89081600","61.19%"
+"15","","Philippines","82684776","72.55%"
+"16","","Iran","65199830","72.83%"
+"17","","Germany","64876300","77.15%"
+"18","","Turkey","57941052","66.55%"
+"19","","Thailand","57005496","79.47%"
+"20","","Egypt","56907320","50.53%"
+"21","","France","54677680","82.50%"
+"22","","United Kingdom","53806964","78.92%"
+"23","","Ethiopia","52489510","41.86%"
+"24","","Italy[i]","50936720","85.44%"
+"25","","South Korea","44764956","86.45%"
+"26","","Colombia","43012176","83.13%"
+"27","","Myanmar","41551930","77.30%"
+"28","","Argentina","41529056","91.46%"
+"29","","Spain","41351230","86.46%"
+"30","","Canada","34742936","89.49%"
+"31","","Tanzania","34434932","53.21%"
+"32","","Peru","30563708","91.30%"
+"33","","Malaysia","28138564","81.10%"
+"34","","Nepal","27883196","93.83%"
+"35","","Saudi Arabia","27041364","84.04%"
+"36","","Morocco","25020168","67.03%"
+"37","","South Africa","24210952","38.81%"
+"38","","Poland","22984544","59.88%"
+"39","","Mozambique","22869646","70.03%"
+"40","","Australia","22231734","84.85%"
+"41","","Venezuela","22157232","78.54%"
+"42","","Uzbekistan","22094470","63.24%"
+"43","","Taiwan","21899240","93.51%"
+"44","","Uganda","20033188","42.34%"
+"45","","Afghanistan","19151368","47.20%"
+"46","","Chile","18088516","92.51%"
+"47","","Sri Lanka","17143760","75.08%"
+"48","","Democratic Republic of the Congo","17045720","16.65%"
+"49","","Angola","16550642","46.44%"
+"50","","Ukraine","16267198","39.63%"
+"51","","Ecuador","15345791","86.10%"
+"52","","Cambodia","15316670","89.04%"
+"53","","Sudan","15207452","30.79%"
+"54","","Kenya","14494372","26.72%"
+"55","","Ghana","13864186","41.82%"
+"56","","Ivory Coast","13568372","44.64%"
+"57","","Netherlands","12582081","70.27%"
+"58","","Zambia","11711565","58.11%"
+"59","","Iraq","11332925","25.72%"
+"60","","Rwanda","10884714","79.74%"
+"61","","Kazakhstan","10858101","54.20%"
+"62","","Cuba","10805570","97.70%"
+"63","","United Arab Emirates","9991089","97.55%"
+"64","","Portugal","9821414","94.28%"
+"65","","Belgium","9261641","79.55%"
+"66","","Somalia","8972167","50.40%"
+"67","","Guatemala","8937923","50.08%"
+"68","","Tunisia","8896848","73.41%"
+"69","","Guinea","8715641","62.01%"
+"70","","Greece","7938031","76.24%"
+"71","","Algeria","7840131","17.24%"
+"72","","Sweden","7775726","74.14%"
+"73","","Zimbabwe","7525882","46.83%"
+"74","","Dominican Republic","7367193","65.60%"
+"75","","Bolivia","7361008","60.95%"
+"76","","Israel","7055466","77.51%"
+"77","","Czech Republic","6982006","65.42%"
+"78","","Hong Kong","6920057","92.69%"
+"79","","Austria","6899873","76.12%"
+"80","","Honduras","6596213","63.04%"
+"81","","Belarus","6536392","71.25%"
+"82","","Hungary","6420354","66.30%"
+"83","","Nicaragua","6404524","95.15%"
+"84","","Niger","6248483","24.69%"
+"85","","Switzerland","6096911","69.34%"
+"86","","Burkina Faso","6089089","27.05%"
+"87","","Laos","5888649","77.90%"
+"88","","Sierra Leone","5676123","68.58%"
+"89","","Romania","5474507","28.56%"
+"90","","Malawi","5433538","26.42%"
+"91","","Azerbaijan","5373253","52.19%"
+"92","","Tajikistan","5328277","52.33%"
+"93","","Singapore","5287005","93.58%"
+"94","","Chad","5147667","27.89%"
+"95","","Jordan","4821579","42.83%"
+"96","","Denmark","4746522","80.41%"
+"97","","El Salvador","4659970","74.20%"
+"98","","Costa Rica","4650636","91.52%"
+"99","","Turkmenistan","4614869","63.83%"
+"100","","Finland","4524288","81.24%"
+"101","","Mali","4354292","18.87%"
+"102","","Norway","4346995","79.66%"
+"103","","South Sudan","4315127","39.15%"
+"104","","New Zealand","4302330","83.84%"
+"105","","Republic of Ireland","4112237","80.47%"
+"106","","Paraguay","3995915","59.11%"
+"107","","Liberia","3903802","72.65%"
+"108","","Cameroon","3753733","13.58%"
+"109","","Panama","3746041","85.12%"
+"110","","Benin","3697190","26.87%"
+"111","","Kuwait","3457498","75.33%"
+"112","","Serbia","3354075","49.39%"
+"113","","Syria","3295630","14.67%"
+"114","","Oman","3279632","69.33%"
+"115","","Uruguay","3010464","88.78%"
+"116","","Qatar","2852178","98.61%"
+"117","","Slovakia","2840017","51.89%"
+"118","","Lebanon","2740227","47.70%"
+"119","","Madagascar","2710365","8.90%"
+"120","","Senegal","2684696","15.21%"
+"121","","Central African Republic","2600389","51.01%"
+"122","","Croatia","2323025","59.46%"
+"123","","Libya","2316327","32.07%"
+"124","","Mongolia","2284018","67.45%"
+"125","","Togo","2255579","24.81%"
+"126","","Bulgaria","2155863","31.58%"
+"127","","Mauritania","2103754","43.15%"
+"128","","Palestine","2012767","37.94%"
+"129","","Lithuania","1958299","69.52%"
+"130","","Botswana","1951054","79.96%"
+"131","","Kyrgyzstan","1736541","24.97%"
+"132","","Georgia","1654504","43.60%"
+"133","","Albania","1349255","47.72%"
+"134","","Latvia","1346184","71.57%"
+"135","","Slovenia","1265802","59.84%"
+"136","","Bahrain","1241174","80.94%"
+"137","","Armenia","1150915","39.95%"
+"138","","Mauritius","1123773","88.06%"
+"139","","Moldova","1109524","36.50%"
+"140","","Yemen","1050202","2.75%"
+"141","","Lesotho","1014073","44.36%"
+"142","","Bosnia and Herzegovina","943394","29.44%"
+"143","","Kosovo","906858","52.79%"
+"144","","Timor-Leste","886838","64.77%"
+"145","","Estonia","870202","64.45%"
+"146","","Jamaica","859773","30.28%"
+"147","","North Macedonia","854570","46.44%"
+"148","","Trinidad and Tobago","754399","50.43%"
+"149","","Guinea-Bissau","747057","35.48%"
+"150","","Fiji","712025","77.44%"
+"151","","Bhutan","699116","89.52%"
+"152","","Republic of the Congo","695760","11.53%"
+"153","","Macau","679703","96.50%"
+"154","","Gambia","674314","25.58%"
+"155","","Cyprus","671193","71.37%"
+"156","","Namibia","629767","21.79%"
+"157","","Eswatini","526050","43.16%"
+"158","","Haiti","521396","4.53%"
+"159","","Guyana","497550","60.56%"
+"160","","Luxembourg","481957","73.77%"
+"161","","Malta","478953","90.68%"
+"162","","Brunei","451149","99.07%"
+"163","","Comoros","438825","52.60%"
+"164","","Djibouti","421573","37.07%"
+"165","","Maldives","399308","76.19%"
+"166","","Papua New Guinea","382020","3.74%"
+"167","","Cabo Verde","356734","68.64%"
+"168","","Solomon Islands","343821","44.02%"
+"169","","Gabon","311244","12.80%"
+"170","","Iceland","309770","81.44%"
+"171","","Northern Cyprus","301673","78.80%"
+"172","","Montenegro","292783","47.63%"
+"173","","Equatorial Guinea","270109","14.98%"
+"174","","Suriname","267820","42.98%"
+"175","","Belize","258473","64.18%"
+"176","","New Caledonia","192375","67.00%"
+"177","","Samoa","191403","88.91%"
+"178","","French Polynesia","190908","68.09%"
+"179","","Vanuatu","176624","56.42%"
+"180","","Bahamas","174810","43.97%"
+"181","","Barbados","163853","58.04%"
+"182","","Sao Tome and Principe","140256","61.97%"
+"183","","Curaçao","108601","58.59%"
+"184","","Kiribati","100900","77.33%"
+"185","","Aruba","90546","84.00%"
+"186","","Seychelles","88520","70.52%"
+"187","","Tonga","87375","83.17%"
+"188","","Jersey","84365","81.52%"
+"189","","Isle of Man","69560","82.66%"
+"190","","Antigua and Barbuda","64290","69.24%"
+"191","","Cayman Islands","62113","86.74%"
+"192","","Saint Lucia","60140","33.64%"
+"193","","Andorra","57913","72.64%"
+"194","","Guernsey","54223","85.06%"
+"195","","Bermuda","48554","74.96%"
+"196","","Grenada","44241","37.84%"
+"197","","Gibraltar","42175","112.08%"
+"198","","Faroe Islands","41715","77.19%"
+"199","","Greenland","41227","73.60%"
+"200","","Saint Vincent and the Grenadines","37532","36.77%"
+"201","","Burundi","36909","0.28%"
+"202","","Saint Kitts and Nevis","33794","72.31%"
+"203","","Dominica","32995","49.36%"
+"204","","Turks and Caicos Islands","32815","71.54%"
+"205","","Sint Maarten","29788","70.65%"
+"206","","Monaco","28875","74.13%"
+"207","","Liechtenstein","26771","68.05%"
+"208","","San Marino","26357","77.26%"
+"209","","British Virgin Islands","19466","50.76%"
+"210","","Caribbean Netherlands","19109","66.69%"
+"211","","Cook Islands","15112","102.48%"
+"212","","Nauru","13106","110.86%"
+"213","","Anguilla","10858","76.45%"
+"214","","Tuvalu","9763","97.51%"
+"215","","Wallis and Futuna","7150","62.17%"
+"216","","Saint Helena Ascension and Tristan da Cunha","4361","81.23%"
+"217","","Falkland Islands","2632","74.88%"
+"218","","Tokelau","2203","95.29%"
+"219","","Montserrat","2104","47.01%"
+"220","","Niue","1638","88.83%"
+"221","","Pitcairn Islands","47","100.00%"
+"222","","North Korea","0","0.00%"
+"223",".mw-parser-output .reflist{margin-bottom:0.5em;list-style-type:decimal}@media screen{.mw-parser-output .reflist{font-size:90%}}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}
+^ The Oxford–AstraZeneca COVID‑19 vaccine is codenamed AZD1222[188] and later supplied under brand names including Vaxzevria[189] and Covishield.[190][191]
+
+^ Number of people who have received at least one dose of a COVID-19 vaccine (unless noted otherwise).
+
+^ Percentage of population that has received at least one dose of a COVID-19 vaccine. May include vaccination of non-citizens which can push totals beyond 100% of the local population.
+
+^ Countries which do not report data for a column are not included in that column's world total.
+
+^ Vaccination note: Countries which do not report the number of people who have received at least one dose are not included in the world total.
+
+^ Does not include special administrative regions (Hong Kong and Macau) or Taiwan.
+
+^ Data on member states of the European Union are individually listed but are also summed here for convenience. They are not double-counted in world totals.
+
+^ Vaccination note: Includes Freely Associated States
+
+^ Vaccination note: Includes Vatican City",".mw-parser-output .reflist{margin-bottom:0.5em;list-style-type:decimal}@media screen{.mw-parser-output .reflist{font-size:90%}}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}
+^ The Oxford–AstraZeneca COVID‑19 vaccine is codenamed AZD1222[188] and later supplied under brand names including Vaxzevria[189] and Covishield.[190][191]
+
+^ Number of people who have received at least one dose of a COVID-19 vaccine (unless noted otherwise).
+
+^ Percentage of population that has received at least one dose of a COVID-19 vaccine. May include vaccination of non-citizens which can push totals beyond 100% of the local population.
+
+^ Countries which do not report data for a column are not included in that column's world total.
+
+^ Vaccination note: Countries which do not report the number of people who have received at least one dose are not included in the world total.
+
+^ Does not include special administrative regions (Hong Kong and Macau) or Taiwan.
+
+^ Data on member states of the European Union are individually listed but are also summed here for convenience. They are not double-counted in world totals.
+
+^ Vaccination note: Includes Freely Associated States
+
+^ Vaccination note: Includes Vatican City",".mw-parser-output .reflist{margin-bottom:0.5em;list-style-type:decimal}@media screen{.mw-parser-output .reflist{font-size:90%}}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}
+^ The Oxford–AstraZeneca COVID‑19 vaccine is codenamed AZD1222[188] and later supplied under brand names including Vaxzevria[189] and Covishield.[190][191]
+
+^ Number of people who have received at least one dose of a COVID-19 vaccine (unless noted otherwise).
+
+^ Percentage of population that has received at least one dose of a COVID-19 vaccine. May include vaccination of non-citizens which can push totals beyond 100% of the local population.
+
+^ Countries which do not report data for a column are not included in that column's world total.
+
+^ Vaccination note: Countries which do not report the number of people who have received at least one dose are not included in the world total.
+
+^ Does not include special administrative regions (Hong Kong and Macau) or Taiwan.
+
+^ Data on member states of the European Union are individually listed but are also summed here for convenience. They are not double-counted in world totals.
+
+^ Vaccination note: Includes Freely Associated States
+
+^ Vaccination note: Includes Vatican City",".mw-parser-output .reflist{margin-bottom:0.5em;list-style-type:decimal}@media screen{.mw-parser-output .reflist{font-size:90%}}.mw-parser-output .reflist .references{font-size:100%;margin-bottom:0;list-style-type:inherit}.mw-parser-output .reflist-columns-2{column-width:30em}.mw-parser-output .reflist-columns-3{column-width:25em}.mw-parser-output .reflist-columns{margin-top:0.3em}.mw-parser-output .reflist-columns ol{margin-top:0}.mw-parser-output .reflist-columns li{page-break-inside:avoid;break-inside:avoid-column}.mw-parser-output .reflist-upper-alpha{list-style-type:upper-alpha}.mw-parser-output .reflist-upper-roman{list-style-type:upper-roman}.mw-parser-output .reflist-lower-alpha{list-style-type:lower-alpha}.mw-parser-output .reflist-lower-greek{list-style-type:lower-greek}.mw-parser-output .reflist-lower-roman{list-style-type:lower-roman}
+^ The Oxford–AstraZeneca COVID‑19 vaccine is codenamed AZD1222[188] and later supplied under brand names including Vaxzevria[189] and Covishield.[190][191]
+
+^ Number of people who have received at least one dose of a COVID-19 vaccine (unless noted otherwise).
+
+^ Percentage of population that has received at least one dose of a COVID-19 vaccine. May include vaccination of non-citizens which can push totals beyond 100% of the local population.
+
+^ Countries which do not report data for a column are not included in that column's world total.
+
+^ Vaccination note: Countries which do not report the number of people who have received at least one dose are not included in the world total.
+
+^ Does not include special administrative regions (Hong Kong and Macau) or Taiwan.
+
+^ Data on member states of the European Union are individually listed but are also summed here for convenience. They are not double-counted in world totals.
+
+^ Vaccination note: Includes Freely Associated States
+
+^ Vaccination note: Includes Vatican City"
